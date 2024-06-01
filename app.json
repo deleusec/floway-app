@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "floway-app",
-    "slug": "floway-app",
+    "name": "Floway",
+    "slug": "floway",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
