@@ -11,7 +11,7 @@ export default function HomeScreen() {
         <Text style={tw`text-xs text-primary-dark`}>Find your flow, Own your way</Text>
       </View>
 
-      <View style={tw`flex-col space-x-10`}>
+      <View style={tw`flex-col`}>
         <Link
           href="/soundscapes"
           style={tw`text-primary hover:text-blue-500`}
