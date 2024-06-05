@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Pressable, Text, View, TextInput, Alert } from 'react-native';
+import { Pressable, Text, View, TextInput, ScrollView } from 'react-native';
 import * as DocumentPicker from 'expo-document-picker';
 import { Audio } from 'expo-av';
 import tw from '@/lib/tailwind';
@@ -57,20 +57,25 @@ const StepTwo: React.FC<StepTwoProps> = ({ soundscape, onFinish }) => {
 
   const handleBlurTime = (index: number, type: 'hours' | 'minutes', value: string) => {
     const [hours, minutes] = sounds[index].playAt.split(':');
-    const newTime = type === 'hours' ? `${value.padStart(2, '0')}:${minutes}` : `${hours}:${value.padStart(2, '0')}`;
+    const newTime = type === 'hours'
+      ? `${(value || '00').padStart(2, '0')}:${(minutes || '00').padStart(2, '0')}`
+      : `${(hours || '00').padStart(2, '0')}:${(value || '00').padStart(2, '0')}`;
     const newSounds = sounds.map((s, i) => (i === index ? { ...s, playAt: newTime } : s));
     setSounds(newSounds);
   };
 
   const handleBlurDistance = (index: number, type: 'kilometers' | 'meters', value: string) => {
     const [kilometers, meters] = sounds[index].playAt.split('.');
-    const newDistance = type === 'kilometers' ? `${value.padStart(2, '0')}.${meters}` : `${kilometers}.${value.padStart(2, '0')}`;
+    const newDistance = type === 'kilometers'
+      ? `${(value || '00').padStart(2, '0')}.${(meters || '00').padStart(2, '0')}`
+      : `${(kilometers || '00').padStart(2, '0')}.${(value || '00').padStart(2, '0')}`;
     const newSounds = sounds.map((s, i) => (i === index ? { ...s, playAt: newDistance } : s));
     setSounds(newSounds);
   };
 
   return (
-    <View style={tw`flex-col items-center p-8 bg-white rounded-lg max-w-[500px] w-full`}>
+    <ScrollView>
+      <View  style={tw`flex-col items-center p-8 bg-white rounded-lg max-w-[500px] w-full`}>
       <Text style={tw`text-xl text-primary mb-5`}>{soundscape.name}</Text>
       <Text style={tw`text-lg text-gray-700 mb-2`}>Goal Type: {soundscape.goalType}</Text>
       <Text style={tw`text-lg text-gray-700 mb-5`}>Goal Value: {soundscape.goalValue}</Text>
@@ -163,7 +168,10 @@ const StepTwo: React.FC<StepTwoProps> = ({ soundscape, onFinish }) => {
       <Pressable onPress={handleFinish} style={tw`bg-green-600 py-2 px-4 rounded-lg`}>
         <Text style={tw`text-white text-center`}>Finish</Text>
       </Pressable>
-    </View>
+
+
+      </View>
+    </ScrollView>
   );
 };
 
