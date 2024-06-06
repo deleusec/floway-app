@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View, FlatList, Button } from 'react-native';
+import { Text, View, FlatList, Button, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Link, useRouter } from 'expo-router';
 import tw from '@/lib/tailwind';
@@ -10,6 +10,16 @@ const SOUNDSCAPE_STORAGE_KEY = process.env.SOUNDSCAPE_STORAGE_KEY || 'soundscape
 export default function Soundscapes() {
   const [soundscapes, setSoundscapes] = useState<Soundscape[]>([]);
   const router = useRouter();
+
+  const clearStorage = async () => {
+    try {
+      await AsyncStorage.clear();
+      Alert.alert('Success', 'Storage successfully cleared');
+    } catch (error) {
+      console.error('Failed to clear storage', error);
+      Alert.alert('Error', 'Failed to clear storage');
+    }
+  };
 
   useEffect(() => {
     const loadSoundscapes = async () => {
@@ -35,6 +45,10 @@ export default function Soundscapes() {
       <View style={tw`justify-center items-center`}>
         <Text style={tw`font-bold text-2xl text-primary`}>Soundscapes</Text>
         <Text style={tw`text-lg text-gray-500`}>Find different Soundscapes</Text>
+        <View style={tw`flex-col`}>
+          <Text style={{ marginBottom: 20 }}>Press the button to clear storage</Text>
+          <Button title="Clear Storage" onPress={clearStorage} />
+        </View>
       </View>
 
       <View style={tw`flex-col`}>
@@ -42,6 +56,7 @@ export default function Soundscapes() {
           Create one
         </Link>
       </View>
+
 
       <FlatList
         data={soundscapes}

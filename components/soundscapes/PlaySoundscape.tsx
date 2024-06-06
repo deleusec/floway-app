@@ -15,7 +15,7 @@ const PlaySoundscape: React.FC<PlaySoundscapeProps> = ({ soundscape }) => {
 
   const parseTime = (timeString: string): number => {
     const [hours, minutes] = timeString.split(':').map(Number);
-    return hours * 60 + minutes;
+    return (hours || 0) * 60 + (minutes || 0);
   };
 
   const playSoundAtTime = async (soundFileUri: string) => {
@@ -26,17 +26,21 @@ const PlaySoundscape: React.FC<PlaySoundscapeProps> = ({ soundscape }) => {
 
   useEffect(() => {
     const totalDuration = parseTime(soundscape.goalValue) * 60 * 1000;
+    const soundTimers: NodeJS.Timeout[] = [];
 
     intervalRef.current = setInterval(() => {
-      setTimer(prevTimer => prevTimer + 1000);
-    }, 1000) as NodeJS.Timeout;
+      setTimer((prevTimer) => prevTimer + 1000);
+    }, 1000);
 
     const playSounds = async () => {
+      console.log(soundscape);
+
       for (const sound of soundscape.sounds) {
         const playAt = parseTime(sound.playAt) * 60 * 1000;
-        setTimeout(() => {
+        const timerId = setTimeout(() => {
           playSoundAtTime(sound.file.fileUri);
         }, playAt);
+        soundTimers.push(timerId);
       }
     };
 
@@ -46,9 +50,10 @@ const PlaySoundscape: React.FC<PlaySoundscapeProps> = ({ soundscape }) => {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
       }
-      soundRefs.current.forEach(sound => sound.unloadAsync());
+      soundTimers.forEach((timer) => clearTimeout(timer));
+      soundRefs.current.forEach((sound) => sound.unloadAsync());
     };
-  }, []);
+  }, [soundscape]);
 
   useEffect(() => {
     const totalDuration = parseTime(soundscape.goalValue) * 60 * 1000;
@@ -63,7 +68,10 @@ const PlaySoundscape: React.FC<PlaySoundscapeProps> = ({ soundscape }) => {
   return (
     <View style={tw`flex-1 justify-center items-center`}>
       <Text style={tw`text-xl`}>Playing Soundscape: {soundscape.name}</Text>
-      <Text style={tw`text-lg`}>Time: {Math.floor(timer / 60000)}:{Math.floor((timer % 60000) / 1000).toString().padStart(2, '0')}</Text>
+      <Text style={tw`text-lg`}>
+        Time: {Math.floor(timer / 60000)}:
+        {Math.floor((timer % 60000) / 1000).toString().padStart(2, '0')}
+      </Text>
     </View>
   );
 };
