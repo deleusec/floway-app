@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View } from 'react-native';
+import { Text, View, ScrollView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import tw from '@/lib/tailwind';
@@ -7,8 +7,8 @@ import StepOne from '@/components/soundscapes/create/StepOne';
 import StepTwo from '@/components/soundscapes/create/StepTwo';
 import Soundscape from '@/types/Soundscape';
 import Sound from '@/types/Sound';
-
-const SOUNDSCAPE_STORAGE_KEY = process.env.SOUNDSCAPE_STORAGE_KEY || 'soundscapes';
+const SOUNDSCAPE_STORAGE_KEY =
+  process.env.SOUNDSCAPE_STORAGE_KEY || 'soundscapes';
 
 export default function SoundscapesCreate() {
   const [step, setStep] = useState(1);
@@ -24,7 +24,9 @@ export default function SoundscapesCreate() {
   useEffect(() => {
     const loadSoundscapes = async () => {
       try {
-        const storedSoundscapes = await AsyncStorage.getItem(SOUNDSCAPE_STORAGE_KEY);
+        const storedSoundscapes = await AsyncStorage.getItem(
+          SOUNDSCAPE_STORAGE_KEY,
+        );
         if (storedSoundscapes) {
           setAllSoundscapes(JSON.parse(storedSoundscapes));
         }
@@ -36,7 +38,11 @@ export default function SoundscapesCreate() {
     loadSoundscapes();
   }, []);
 
-  const handleNextStep = (name: string, goalType: 'distance' | 'time', goalValue: string) => {
+  const handleNextStep = (
+    name: string,
+    goalType: 'distance' | 'time',
+    goalValue: string,
+  ) => {
     setSoundscape({ name, goalType, goalValue, sounds: [] });
     setStep(2);
   };
@@ -48,7 +54,10 @@ export default function SoundscapesCreate() {
     try {
       const updatedSoundscapes = [...allSoundscapes, newSoundscape];
       setAllSoundscapes(updatedSoundscapes);
-      await AsyncStorage.setItem(SOUNDSCAPE_STORAGE_KEY, JSON.stringify(updatedSoundscapes));
+      await AsyncStorage.setItem(
+        SOUNDSCAPE_STORAGE_KEY,
+        JSON.stringify(updatedSoundscapes),
+      );
       router.push('/soundscapes');
     } catch (error) {
       console.error('Failed to save soundscape', error);
@@ -56,13 +65,17 @@ export default function SoundscapesCreate() {
   };
 
   return (
-    <View style={tw`flex-1 justify-start items-center py-20 px-10 gap-20`}>
-      <Text style={tw`font-bold text-2xl text-primary`}>
-        Soundscapes Maker
-      </Text>
+    <ScrollView>
+      <View style={tw`flex-1 justify-start items-center py-20 md:px-10 gap-20`}>
+        <Text style={tw`font-montserrat font-bold text-2xl text-primary`}>
+          Soundscapes Maker
+        </Text>
 
-      {step === 1 && <StepOne onNext={handleNextStep} />}
-      {step === 2 && <StepTwo soundscape={soundscape} onFinish={handleFinish} />}
-    </View>
+        {step === 1 && <StepOne onNext={handleNextStep} />}
+        {step === 2 && (
+          <StepTwo soundscape={soundscape} onFinish={handleFinish} />
+        )}
+      </View>
+    </ScrollView>
   );
 }

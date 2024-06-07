@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Platform,
   Pressable,
@@ -28,6 +28,8 @@ const StepTwo: React.FC<StepTwoProps> = ({ soundscape, onFinish }) => {
     index: number;
     show: boolean;
   }>({ index: -1, show: false });
+  const [recording, setRecording] = useState<Audio.Recording | null>(null);
+  const [permissionResponse, requestPermission] = Audio.usePermissions();
 
   const pickDocument = async () => {
     let result = await DocumentPicker.getDocumentAsync({
@@ -56,6 +58,65 @@ const StepTwo: React.FC<StepTwoProps> = ({ soundscape, onFinish }) => {
       ]);
     });
     setShowOptions(false);
+  };
+
+  const startRecording = async () => {
+    try {
+      if (permissionResponse?.status !== 'granted') {
+        console.log('Requesting permission..');
+        await requestPermission();
+      }
+      await Audio.setAudioModeAsync({
+        allowsRecordingIOS: true,
+        playsInSilentModeIOS: true,
+      });
+
+      console.log('Starting recording..');
+      const { recording } = await Audio.Recording.createAsync(
+        Audio.RecordingOptionsPresets.HIGH_QUALITY
+      );
+      setRecording(recording);
+      console.log('Recording started');
+    } catch (err) {
+      console.error('Failed to start recording', err);
+    }
+  };
+
+  const stopRecording = async () => {
+    console.log('Stopping recording..');
+    if (recording) {
+      await recording.stopAndUnloadAsync();
+      await Audio.setAudioModeAsync({
+        allowsRecordingIOS: false,
+      });
+      const uri = recording.getURI();
+      console.log('Recording stopped and stored at', uri);
+
+      const fileName = `recording-${Date.now()}.m4a`;
+
+      let fileUri = uri;
+      if (Platform.OS !== 'web') {
+        const newUri = `${FileSystem.documentDirectory}${fileName}`;
+        await FileSystem.moveAsync({
+          from: uri!,
+          to: newUri,
+        });
+        fileUri = newUri;
+      }
+
+      setSounds((prevSounds) => [
+        ...prevSounds,
+        {
+          anchor: 'start',
+          playAt: '00:00',
+          file: {
+            name: fileName,
+            fileUri: fileUri,
+          },
+        },
+      ]);
+      setRecording(null);
+    }
   };
 
   const handleFinish = () => {
@@ -128,10 +189,10 @@ const StepTwo: React.FC<StepTwoProps> = ({ soundscape, onFinish }) => {
   return (
     <ScrollView>
       <View
-        style={tw`flex-col items-center p-8 bg-white rounded-lg max-w-[500px] w-full`}
+        style={tw`flex-col items-center p-4 bg-white rounded-lg max-w-[500px] w-full`}
       >
-        <Text style={tw`text-xl text-primary mb-5`}>{soundscape.name}</Text>
-        <Text style={tw`text-lg text-gray-700 mb-2`}>
+        <Text style={tw`font-montserrat text-xl text-primary mb-5`}>{soundscape.name}</Text>
+        <Text style={tw`font-montserrat text-lg text-gray-700 mb-2`}>
           Goal Type: {soundscape.goalType}
         </Text>
         <Text style={tw`text-lg text-gray-700 mb-5`}>
@@ -143,20 +204,22 @@ const StepTwo: React.FC<StepTwoProps> = ({ soundscape, onFinish }) => {
             style={tw`bg-blue-600 py-2 px-4 rounded-lg`}
             onPress={() => setShowOptions(!showOptions)}
           >
-            <Text style={tw`text-white text-center`}>Add Audio Element</Text>
+            <Text style={tw`font-montserrat text-white text-center`}>Add Audio Element</Text>
           </Pressable>
           {showOptions && (
             <View
               style={tw`absolute top-12 left-0 bg-white border border-gray-300 rounded-lg shadow-lg p-2`}
             >
               <Pressable style={tw`py-2`} onPress={pickDocument}>
-                <Text style={tw`text-gray-800`}>Import Audio</Text>
+                <Text style={tw`font-montserrat text-gray-800`}>Import Audio</Text>
               </Pressable>
               <Pressable
                 style={tw`py-2`}
-                onPress={() => console.log('Record Audio')}
+                onPress={recording ? stopRecording : startRecording}
               >
-                <Text style={tw`text-gray-800`}>Record Audio</Text>
+                <Text style={tw`font-montserrat text-gray-800`}>
+                  {recording ? 'Stop Recording' : 'Record Audio'}
+                </Text>
               </Pressable>
             </View>
           )}
@@ -172,21 +235,21 @@ const StepTwo: React.FC<StepTwoProps> = ({ soundscape, onFinish }) => {
                 <View
                   style={tw`w-10/12 bg-gray-100 p-4 rounded-lg shadow-lg border border-gray-300`}
                 >
-                  <View style={tw`flex-row items-center justify-between mb-2`}>
-                    <Text style={tw`text-gray-800 flex-1`}>
+                  <View style={tw`flex-col items-center justify-between mb-2`}>
+                    <Text style={tw`font-montserrat text-gray-800 flex-1`}>
                       {sound.file.name}
                     </Text>
                     <Pressable
                       onPress={() => playSound(sound.file.fileUri)}
                       style={tw`ml-2 bg-blue-600 py-1 px-3 rounded-lg`}
                     >
-                      <Text style={tw`text-white`}>Play</Text>
+                      <Text style={tw`font-montserrat text-white`}>Play</Text>
                     </Pressable>
                     <Pressable
                       onPress={stopSound}
                       style={tw`ml-2 bg-red-600 py-1 px-3 rounded-lg`}
                     >
-                      <Text style={tw`text-white`}>Stop</Text>
+                      <Text style={tw`font-montserrat text-white`}>Stop</Text>
                     </Pressable>
                   </View>
 
@@ -200,7 +263,7 @@ const StepTwo: React.FC<StepTwoProps> = ({ soundscape, onFinish }) => {
                             }
                             style={tw`border border-gray-400 rounded-lg py-2 px-4 w-40 text-center`}
                           >
-                            <Text>{sound.playAt}</Text>
+                            <Text style={tw`font-montserrat`} >{sound.playAt}</Text>
                           </Pressable>
                           {showTimePicker.show &&
                             showTimePicker.index === index && (
@@ -217,7 +280,7 @@ const StepTwo: React.FC<StepTwoProps> = ({ soundscape, onFinish }) => {
                       ) : (
                         <>
                           <TextInput
-                            style={tw`border border-gray-400 rounded-lg py-2 px-4 w-20 mr-2 text-center`}
+                            style={tw`font-montserrat border border-gray-400 rounded-lg py-2 px-4 w-20 mr-2 text-center`}
                             placeholder="hh"
                             defaultValue={hours}
                             onBlur={(e) =>
@@ -226,9 +289,9 @@ const StepTwo: React.FC<StepTwoProps> = ({ soundscape, onFinish }) => {
                             keyboardType="numeric"
                             maxLength={2}
                           />
-                          <Text style={tw`text-lg text-gray-700`}>:</Text>
+                          <Text style={tw`font-montserrat text-lg text-gray-700`}>:</Text>
                           <TextInput
-                            style={tw`border border-gray-400 rounded-lg py-2 px-4 w-20 ml-2 text-center`}
+                            style={tw`font-montserrat border border-gray-400 rounded-lg py-2 px-4 w-20 ml-2 text-center`}
                             placeholder="mm"
                             defaultValue={minutes}
                             onBlur={(e) =>
@@ -248,7 +311,7 @@ const StepTwo: React.FC<StepTwoProps> = ({ soundscape, onFinish }) => {
                   {soundscape.goalType === 'distance' && (
                     <View style={tw`flex-row mb-5`}>
                       <TextInput
-                        style={tw`border border-gray-400 rounded-lg py-2 px-4 w-20 mr-2 text-center`}
+                        style={tw`font-montserrat border border-gray-400 rounded-lg py-2 px-4 w-20 mr-2 text-center`}
                         placeholder="km"
                         defaultValue={kilometers}
                         onBlur={(e) =>
@@ -261,9 +324,9 @@ const StepTwo: React.FC<StepTwoProps> = ({ soundscape, onFinish }) => {
                         keyboardType="numeric"
                         maxLength={2}
                       />
-                      <Text style={tw`text-lg text-gray-700`}>,</Text>
+                      <Text style={tw`font-montserrat text-lg text-gray-700`}>,</Text>
                       <TextInput
-                        style={tw`border border-gray-400 rounded-lg py-2 px-4 w-20 ml-2 text-center`}
+                        style={tw`font-montserrat border border-gray-400 rounded-lg py-2 px-4 w-20 ml-2 text-center`}
                         placeholder="m"
                         defaultValue={meters}
                         onBlur={(e) =>
@@ -288,7 +351,7 @@ const StepTwo: React.FC<StepTwoProps> = ({ soundscape, onFinish }) => {
           onPress={handleFinish}
           style={tw`bg-green-600 py-2 px-4 rounded-lg`}
         >
-          <Text style={tw`text-white text-center`}>Finish</Text>
+          <Text style={tw`font-montserrat text-white text-center`}>Finish</Text>
         </Pressable>
       </View>
     </ScrollView>

@@ -26,7 +26,7 @@ export default function Root({ children }: PropsWithChildren) {
         <style dangerouslySetInnerHTML={{ __html: responsiveBackground }} />
         {/* Add any additional <head> elements that you want globally available on web... */}
       </head>
-      <body>{children}</body>
+      <body style={{fontFamily: "Monserrat-Regular", backgroundColor: "#FFFFFF"}}>{children}</body>
     </html>
   );
 }
@@ -34,9 +34,4 @@ export default function Root({ children }: PropsWithChildren) {
 const responsiveBackground = `
 body {
   background-color: #272525;
-}
-@media (prefers-color-scheme: dark) {
-  body {
-    background-color: #000;
-  }
 }`;

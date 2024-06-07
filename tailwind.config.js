@@ -12,6 +12,9 @@ module.exports = {
           'dark': '#1E0BFF',
         }
       },
+      fontFamily: {
+        'montserrat': ['Montserrat-Regular', 'sans-serif'],
+      },
     },
   },
   plugins: [],
