@@ -48,13 +48,13 @@ const StepOne: React.FC<StepOneProps> = ({ onNext }) => {
       <View
         style={tw`flex-col items-center p-8 bg-white rounded-lg w-full max-w-[500px]`}
       >
-        <Text style={tw`text-xl text-gray-800 mb-5`}>Name your soundscape</Text>
+        <Text style={tw`font-montserrat text-xl text-gray-800 mb-5`}>Name your soundscape</Text>
         <TextInput
-          style={tw`border border-gray-400 rounded-lg py-2 px-4 w-full mb-5`}
+          style={tw`font-montserrat border border-gray-400 rounded-lg py-2 px-4 w-full mb-5`}
           value={name}
           onChangeText={setName}
         />
-        <Text style={tw`text-lg text-gray-700 mb-5`}>
+        <Text style={tw`font-montserrat text-lg text-gray-700 mb-5`}>
           Choose your goal type
         </Text>
         <View style={tw`flex-row mb-5`}>
@@ -65,7 +65,7 @@ const StepOne: React.FC<StepOneProps> = ({ onNext }) => {
             ]}
             onPress={() => setGoalType('distance')}
           >
-            <Text style={tw`text-white`}>Distance</Text>
+            <Text style={tw`font-montserrat text-white`}>Distance</Text>
           </Pressable>
           <Pressable
             style={[
@@ -74,25 +74,25 @@ const StepOne: React.FC<StepOneProps> = ({ onNext }) => {
             ]}
             onPress={() => setGoalType('time')}
           >
-            <Text style={tw`text-white`}>Time</Text>
+            <Text style={tw`font-montserrat text-white`}>Time</Text>
           </Pressable>
         </View>
         {goalType === 'distance' && (
           <View style={tw`w-full items-center`}>
-            <Text style={tw`text-lg text-gray-700 mb-2`}>
+            <Text style={tw`font-montserrat text-lg text-gray-700 mb-2`}>
               Enter distance (km, m)
             </Text>
             <View style={tw`flex-row mb-5`}>
               <TextInput
-                style={tw`border border-gray-400 rounded-lg py-2 px-4 w-20 mr-2 text-center`}
+                style={tw`font-montserrat border border-gray-400 rounded-lg py-2 px-4 w-20 mr-2 text-center`}
                 placeholder="km"
                 value={kilometers}
                 onChangeText={setKilometers}
                 keyboardType="numeric"
               />
-              <Text style={tw`text-lg text-gray-700`}>,</Text>
+              <Text style={tw`font-montserrat text-lg text-gray-700`}>,</Text>
               <TextInput
-                style={tw`border border-gray-400 rounded-lg py-2 px-4 w-20 ml-2 text-center`}
+                style={tw`font-montserrat border border-gray-400 rounded-lg py-2 px-4 w-20 ml-2 text-center`}
                 placeholder="m"
                 value={meters}
                 onChangeText={setMeters}
@@ -104,21 +104,21 @@ const StepOne: React.FC<StepOneProps> = ({ onNext }) => {
         )}
         {goalType === 'time' && (
           <View style={tw`w-full items-center`}>
-            <Text style={tw`text-lg text-gray-700 mb-2`}>
+            <Text style={tw`font-montserrat text-lg text-gray-700 mb-2`}>
               Enter time (hh:mm)
             </Text>
             <View style={tw`flex-row mb-5`}>
               <TextInput
-                style={tw`border border-gray-400 rounded-lg py-2 px-4 w-20 mr-2 text-center`}
+                style={tw`font-montserrat border border-gray-400 rounded-lg py-2 px-4 w-20 mr-2 text-center`}
                 placeholder="hh"
                 value={hours}
                 onChangeText={setHours}
                 keyboardType="numeric"
                 maxLength={2}
               />
-              <Text style={tw`text-lg text-gray-700`}>:</Text>
+              <Text style={tw`font-montserrat text-lg text-gray-700`}>:</Text>
               <TextInput
-                style={tw`border border-gray-400 rounded-lg py-2 px-4 w-20 ml-2 text-center`}
+                style={tw`font-montserrat border border-gray-400 rounded-lg py-2 px-4 w-20 ml-2 text-center`}
                 placeholder="mm"
                 value={minutes}
                 onChangeText={setMinutes}
@@ -136,7 +136,7 @@ const StepOne: React.FC<StepOneProps> = ({ onNext }) => {
             isNextDisabled() ? tw`bg-gray-400` : tw`bg-primary`,
           ]}
         >
-          <Text style={tw`text-white`}>Next</Text>
+          <Text style={tw`font-montserrat text-white`}>Next</Text>
         </Pressable>
       </View>
     </ScrollView>
