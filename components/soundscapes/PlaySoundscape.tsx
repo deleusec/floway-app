@@ -67,8 +67,8 @@ const PlaySoundscape: React.FC<PlaySoundscapeProps> = ({ soundscape }) => {
 
   return (
     <View style={tw`flex-1 justify-center items-center`}>
-      <Text style={tw`font-montserrat text-xl`}>Playing Soundscape: {soundscape.name}</Text>
-      <Text style={tw`font-montserrat text-lg`}>
+      <Text style={tw`font-poppins text-xl`}>Playing Soundscape: {soundscape.name}</Text>
+      <Text style={tw`font-poppins text-lg`}>
         Time: {Math.floor(timer / 60000)}:
         {Math.floor((timer % 60000) / 1000).toString().padStart(2, '0')}
       </Text>
