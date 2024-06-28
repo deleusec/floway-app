@@ -67,7 +67,7 @@ export default function SoundscapesCreate() {
   return (
     <ScrollView>
       <View style={tw`flex-1 justify-start items-center py-20 md:px-10 gap-20`}>
-        <Text style={tw`font-montserrat font-bold text-2xl text-primary`}>
+        <Text style={tw`font-poppins font-bold text-2xl text-primary`}>
           Soundscapes Maker
         </Text>
 
